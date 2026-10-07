@@ -145,58 +145,138 @@ export const OverviewPage: React.FC = () => {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {priorityLeads.map((lead) => (
-                  <div
-                    key={lead.id}
-                    className="p-4 rounded-lg border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 transition-colors flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                          <h3 className="text-sm font-semibold text-slate-900">{lead.company_name}</h3>
-                          <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+              {priorityLeads.length === 1 ? (
+                (() => {
+                  const lead = priorityLeads[0];
+                  return (
+                    <div
+                      key={lead.id}
+                      className="p-5 rounded-lg border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                        <div className="space-y-3 flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-base font-semibold text-slate-900">{lead.company_name}</h3>
+                            {lead.intelligence?.status === 'COMPLETED' ? (
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Ready
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                                Unanalyzed
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500">
                             {lead.industry && <span>{lead.industry}</span>}
                             {lead.industry && lead.location && <span>•</span>}
                             {lead.location && <span>{lead.location}</span>}
+                            {lead.headcount_growth && (
+                              <>
+                                <span>•</span>
+                                <span className="font-medium text-slate-700">{lead.headcount_growth} growth</span>
+                              </>
+                            )}
+                            {lead.open_positions !== null && lead.open_positions !== undefined && (
+                              <>
+                                <span>•</span>
+                                <span className="font-medium text-slate-700">{lead.open_positions} open roles</span>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {lead.intelligence?.signals?.map((sig, idx) => (
+                              <SignalBadge key={idx} signal={sig} size="sm" />
+                            ))}
                           </div>
                         </div>
-                        {lead.intelligence?.status === 'COMPLETED' ? (
-                          <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                            Ready
-                          </span>
-                        ) : (
-                          <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                            Unanalyzed
-                          </span>
+
+                        <div className="lg:w-96 flex flex-col justify-between shrink-0 bg-white p-4 rounded-lg border border-slate-200/70">
+                          {lead.intelligence?.why_contact_now ? (
+                            <p className="text-xs text-slate-700 leading-relaxed italic line-clamp-3 mb-3">
+                              "{lead.intelligence.why_contact_now}"
+                            </p>
+                          ) : (
+                            <p className="text-xs text-slate-400 italic mb-3">
+                              Pending intelligence generation.
+                            </p>
+                          )}
+                          <div className="flex justify-end pt-2 border-t border-slate-100">
+                            <Link
+                              to={`/leads/${lead.id}`}
+                              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+                            >
+                              <span>View Intelligence</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {priorityLeads.map((lead) => (
+                    <div
+                      key={lead.id}
+                      className="p-4 rounded-lg border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 transition-colors flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div>
+                            <h3 className="text-sm font-semibold text-slate-900">{lead.company_name}</h3>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500 mt-0.5">
+                              {lead.industry && <span>{lead.industry}</span>}
+                              {lead.industry && lead.location && <span>•</span>}
+                              {lead.location && <span>{lead.location}</span>}
+                              {lead.open_positions !== null && lead.open_positions !== undefined && (
+                                <>
+                                  <span>•</span>
+                                  <span>{lead.open_positions} open roles</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          {lead.intelligence?.status === 'COMPLETED' ? (
+                            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                              Ready
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                              Unanalyzed
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5 my-3">
+                          {lead.intelligence?.signals?.map((sig, idx) => (
+                            <SignalBadge key={idx} signal={sig} size="sm" />
+                          ))}
+                        </div>
+
+                        {lead.intelligence?.why_contact_now && (
+                          <p className="text-xs text-slate-600 bg-white p-2.5 rounded-md border border-slate-200/70 line-clamp-2 italic mb-3">
+                            "{lead.intelligence.why_contact_now}"
+                          </p>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5 my-3">
-                        {lead.intelligence?.signals?.map((sig, idx) => (
-                          <SignalBadge key={idx} signal={sig} size="sm" />
-                        ))}
+                      <div className="pt-2 border-t border-slate-200/60 flex justify-end">
+                        <Link
+                          to={`/leads/${lead.id}`}
+                          className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+                        >
+                          <span>View Intelligence</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
                       </div>
-
-                      {lead.intelligence?.why_contact_now && (
-                        <p className="text-xs text-slate-600 bg-white p-2.5 rounded-md border border-slate-200/70 line-clamp-2 italic mb-3">
-                          "{lead.intelligence.why_contact_now}"
-                        </p>
-                      )}
                     </div>
-
-                    <div className="pt-2 border-t border-slate-200/60 flex justify-end">
-                      <Link
-                        to={`/leads/${lead.id}`}
-                        className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
-                      >
-                        <span>View Intelligence</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -220,15 +300,18 @@ export const OverviewPage: React.FC = () => {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50/75 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-50/75 border-b border-slate-200">
                   <tr>
-                    <th className="px-6 py-3">Company</th>
-                    <th className="px-6 py-3">Industry</th>
-                    <th className="px-6 py-3">Location</th>
-                    <th className="px-6 py-3">Employees</th>
-                    <th className="px-6 py-3">Signals</th>
-                    <th className="px-6 py-3">Intelligence</th>
-                    <th className="px-6 py-3 text-right">Action</th>
+                    {/* Primary columns */}
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-800 uppercase tracking-wider">Company</th>
+                    {/* Secondary context */}
+                    <th className="px-6 py-3 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Industry</th>
+                    <th className="px-6 py-3 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Location</th>
+                    <th className="px-6 py-3 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Employees</th>
+                    {/* Primary columns */}
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-800 uppercase tracking-wider">Signals</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-800 uppercase tracking-wider">Intelligence</th>
+                    <th className="px-6 py-3 text-xs font-semibold text-slate-800 uppercase tracking-wider text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -238,20 +321,23 @@ export const OverviewPage: React.FC = () => {
 
                     return (
                       <tr key={lead.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="px-6 py-3.5 font-medium text-slate-900">
+                        {/* Primary */}
+                        <td className="px-6 py-3.5 font-semibold text-slate-900">
                           <Link to={`/leads/${lead.id}`} className="hover:text-indigo-600 transition-colors">
                             {lead.company_name}
                           </Link>
                         </td>
-                        <td className="px-6 py-3.5 text-slate-600 text-xs">
+                        {/* Secondary */}
+                        <td className="px-6 py-3.5 text-slate-500 text-xs font-normal">
                           {lead.industry || '—'}
                         </td>
-                        <td className="px-6 py-3.5 text-slate-600 text-xs">
+                        <td className="px-6 py-3.5 text-slate-500 text-xs font-normal">
                           {lead.location || '—'}
                         </td>
-                        <td className="px-6 py-3.5 text-slate-600 text-xs">
+                        <td className="px-6 py-3.5 text-slate-500 text-xs font-normal">
                           {lead.employees ? lead.employees.toLocaleString() : '—'}
                         </td>
+                        {/* Primary */}
                         <td className="px-6 py-3.5">
                           {signals.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
@@ -265,22 +351,22 @@ export const OverviewPage: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <span className="text-xs text-slate-400">None detected</span>
+                            <span className="text-xs text-slate-400 font-normal">None detected</span>
                           )}
                         </td>
                         <td className="px-6 py-3.5">
                           {status === 'COMPLETED' ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               Ready
                             </span>
                           ) : status === 'FAILED' ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full">
                               <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                               Failed
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full">
                               Pending
                             </span>
                           )}
@@ -288,9 +374,10 @@ export const OverviewPage: React.FC = () => {
                         <td className="px-6 py-3.5 text-right">
                           <Link
                             to={`/leads/${lead.id}`}
-                            className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800"
                           >
-                            View Lead
+                            <span>View</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
                           </Link>
                         </td>
                       </tr>

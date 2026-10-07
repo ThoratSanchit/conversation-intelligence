@@ -385,22 +385,22 @@ export const LeadDetailPage: React.FC = () => {
 
             {intelligence?.status === 'COMPLETED' ? (
               <div className="space-y-6">
-                {/* 1. WHY CONTACT NOW? (The Most Prominent Card) */}
-                <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-xl p-6 text-white shadow-md border border-indigo-800/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                {/* 1. WHY CONTACT NOW? (Primary Trigger - Subtle, Premium, Clean) */}
+                <div className="bg-gradient-to-br from-indigo-50/70 via-white to-slate-50/60 rounded-xl p-6 border-2 border-indigo-200/90 shadow-xs relative">
+                  <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-indigo-100/70">
+                    <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-indigo-600" />
                       <span>Primary Trigger • Why Contact Now?</span>
                     </span>
-                    <span className="text-[11px] font-medium text-indigo-200 bg-indigo-800/60 px-2 py-0.5 rounded-full border border-indigo-700">
+                    <span className="text-[11px] font-semibold text-indigo-700 bg-indigo-100/80 border border-indigo-200 px-2.5 py-0.5 rounded-full">
                       Immediate Timing
                     </span>
                   </div>
-                  <p className="text-base sm:text-lg font-medium leading-relaxed text-indigo-50">
+                  <p className="text-base sm:text-lg font-medium leading-relaxed text-slate-900 tracking-tight">
                     "{intelligence.why_contact_now}"
                   </p>
-                  <p className="text-xs text-indigo-300/80 mt-3 pt-3 border-t border-indigo-800/60">
-                    Timing is grounded directly in recent hiring spikes and expansion milestones.
+                  <p className="text-xs text-slate-500 mt-4 pt-3 border-t border-indigo-100/80">
+                    Timing is grounded directly in verified hiring spikes and expansion milestones.
                   </p>
                 </div>
 

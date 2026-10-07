@@ -261,17 +261,20 @@ export const LeadsPage: React.FC = () => {
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                <thead className="bg-slate-50/80 border-b border-slate-200">
                   <tr>
-                    <th className="px-5 py-3.5">Company</th>
-                    <th className="px-5 py-3.5">Industry</th>
-                    <th className="px-5 py-3.5">Location</th>
-                    <th className="px-5 py-3.5">Employees</th>
-                    <th className="px-5 py-3.5">Headcount Growth</th>
-                    <th className="px-5 py-3.5">Open Roles</th>
-                    <th className="px-5 py-3.5 min-w-[200px]">Detected Signals</th>
-                    <th className="px-5 py-3.5">Intelligence</th>
-                    <th className="px-5 py-3.5 text-right">Action</th>
+                    {/* Primary column */}
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-800 uppercase tracking-wider">Company</th>
+                    {/* Secondary context */}
+                    <th className="px-5 py-3.5 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Industry</th>
+                    <th className="px-5 py-3.5 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Location</th>
+                    <th className="px-5 py-3.5 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Employees</th>
+                    <th className="px-5 py-3.5 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Headcount Growth</th>
+                    <th className="px-5 py-3.5 text-[11px] font-normal text-slate-400 uppercase tracking-wider">Open Roles</th>
+                    {/* Primary columns */}
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-800 uppercase tracking-wider min-w-[200px]">Detected Signals</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-800 uppercase tracking-wider">Intelligence</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-800 uppercase tracking-wider text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -284,6 +287,7 @@ export const LeadsPage: React.FC = () => {
                         key={lead.id}
                         className="hover:bg-slate-50/80 transition-colors group"
                       >
+                        {/* Primary: Company */}
                         <td className="px-5 py-4 font-semibold text-slate-900">
                           <Link
                             to={`/leads/${lead.id}`}
@@ -292,48 +296,34 @@ export const LeadsPage: React.FC = () => {
                             {lead.company_name}
                           </Link>
                           {lead.owner_name && (
-                            <span className="block text-xs font-normal text-slate-500">
+                            <span className="block text-xs font-normal text-slate-500 mt-0.5">
                               {lead.owner_name} {lead.owner_title ? `• ${lead.owner_title}` : ''}
                             </span>
                           )}
                         </td>
-                        <td className="px-5 py-4 text-xs text-slate-600">
+
+                        {/* Secondary context columns: subtly muted */}
+                        <td className="px-5 py-4 text-xs text-slate-500 font-normal">
                           {lead.industry || '—'}
                         </td>
-                        <td className="px-5 py-4 text-xs text-slate-600">
+                        <td className="px-5 py-4 text-xs text-slate-500 font-normal">
                           {lead.location || '—'}
                         </td>
-                        <td className="px-5 py-4 text-xs text-slate-600">
+                        <td className="px-5 py-4 text-xs text-slate-500 font-normal tabular-nums">
                           {lead.employees ? lead.employees.toLocaleString() : '—'}
                         </td>
-                        <td className="px-5 py-4 text-xs font-medium">
-                          {lead.headcount_growth ? (
-                            <span
-                              className={
-                                lead.headcount_growth.includes('-')
-                                  ? 'text-slate-600'
-                                  : 'text-emerald-600'
-                              }
-                            >
-                              {lead.headcount_growth}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400">—</span>
-                          )}
+                        <td className="px-5 py-4 text-xs text-slate-500 font-normal tabular-nums">
+                          {lead.headcount_growth || '—'}
                         </td>
-                        <td className="px-5 py-4 text-xs font-medium text-slate-700">
+                        <td className="px-5 py-4 text-xs text-slate-500 font-normal tabular-nums">
                           {lead.open_positions !== null && lead.open_positions !== undefined ? (
-                            lead.open_positions >= 5 ? (
-                              <span className="text-amber-700 font-semibold">
-                                {lead.open_positions} roles
-                              </span>
-                            ) : (
-                              <span>{lead.open_positions}</span>
-                            )
+                            <span>{lead.open_positions} open roles</span>
                           ) : (
-                            <span className="text-slate-400">—</span>
+                            <span>—</span>
                           )}
                         </td>
+
+                        {/* Primary: Detected Signals */}
                         <td className="px-5 py-4">
                           {signals.length > 0 ? (
                             <div className="flex flex-wrap gap-1.5">
@@ -342,9 +332,11 @@ export const LeadsPage: React.FC = () => {
                               ))}
                             </div>
                           ) : (
-                            <span className="text-xs text-slate-400 font-normal">None detected</span>
+                            <span className="text-xs text-slate-400 font-normal italic">None detected</span>
                           )}
                         </td>
+
+                        {/* Primary: Intelligence */}
                         <td className="px-5 py-4">
                           {status === 'COMPLETED' ? (
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
@@ -362,10 +354,12 @@ export const LeadsPage: React.FC = () => {
                             </span>
                           )}
                         </td>
+
+                        {/* Primary: Action */}
                         <td className="px-5 py-4 text-right">
                           <Link
                             to={`/leads/${lead.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200/60 transition-colors shadow-2xs"
                           >
                             <span>View</span>
                             <ChevronRight className="w-3.5 h-3.5" />

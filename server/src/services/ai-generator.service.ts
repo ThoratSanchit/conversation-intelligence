@@ -61,10 +61,18 @@ CRITICAL FACTUAL GROUNDING & HYPOTHESIS-DRIVEN RULES:
 5. MISSING DATA HANDLING:
    - If fields are missing (e.g. revenue unknown, open positions missing), work strictly with available data. Never guess or fabricate defaults.
 
+6. ABSOLUTELY NO SUBJECTIVE OR FLATTERING LANGUAGE:
+   - Strictly avoid subjective adjectives and flattery (e.g., do NOT use "impressive", "amazing", "strong growth", "exciting", "significant opportunity").
+   - Always state exact numeric facts directly (e.g. state "35% headcount growth and 7 open roles" instead of "impressive 35% growth" or "several open roles").
+
+7. EXACT NUMERIC USAGE (NO VAGUE QUALIFIERS):
+   - When a specific number is provided (e.g. 7 open positions, 28% growth), cite that exact value (e.g. "7 open roles", "28% headcount growth").
+   - Do NOT replace exact values with vague phrases like "several roles", "many positions", "a few percent", or "rapid hiring".
+
 OUTPUT SPECIFICATION:
 You must return valid JSON with exactly the following four fields:
 1. "why_contact_now":
-   Explain the immediate trigger for outreach based directly on factual signals (e.g., hiring spike, steady expansion, contraction). Explain why current timing is relevant without asserting unverified operational failures.
+   Explain the immediate trigger for outreach based directly on factual signals (e.g., hiring spike, steady expansion, contraction). Cite exact facts and numbers. Explain why current timing is relevant without asserting unverified operational failures.
 2. "why_it_matters":
    Explain why this situation matters to the specific decision-maker (consider their job title/role if provided). Frame departmental implications cautiously as areas that may gain priority or introduce new coordination needs, without presuming they definitely have a problem.
 3. "conversation_angle":
@@ -74,9 +82,9 @@ You must return valid JSON with exactly the following four fields:
 4. "suggested_opening":
    A concise, human-sounding outreach opener (2 to 3 sentences max) tailored to the decision-maker and company context.
    Rules for opener:
-   - Reference real company facts naturally.
+   - Reference real company facts and EXACT numbers naturally (e.g., "35% headcount growth and 7 open roles", NOT "impressive growth and several open roles").
    - Use an exploratory, peer-to-peer curiosity tone.
-   - NO fake familiarity, NO exaggerated flattery ("I noticed your amazing company..."), NO presumption of pain, and NO generic sales pitches ("I help companies like yours...").`;
+   - NO subjective flattery or adjectives ("impressive", "amazing", "exciting"), NO presumption of pain, and NO generic sales pitches ("I help companies like yours...").`;
 
 export class AiGeneratorService {
   private groq: Groq | null = null;
@@ -132,7 +140,7 @@ Generate the 4 intelligence fields in strict JSON format:
   "suggested_opening": "..."
 }
 
-CRITICAL: Ground all fields strictly in the factual data above. Use exploratory hypothesis framing ("may be worth exploring", "could create additional complexity"). Do NOT assume unverified pain points, bottlenecks, or deficits. Technology is context only. Frame conversation_angle as an exploratory topic or question.`;
+CRITICAL: Ground all fields strictly in the factual data above. Use EXACT numbers (e.g. '7 open roles', '35% headcount growth'). Do NOT use subjective flattery ('impressive', 'amazing', 'exciting') or vague qualifiers ('several roles'). Do NOT assume unverified pain points, bottlenecks, or deficits. Technology is context only. Frame conversation_angle as an exploratory topic or question.`;
   }
 
   /**
