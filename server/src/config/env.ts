@@ -15,9 +15,9 @@ export const env = {
     name: process.env.DB_NAME || 'saasquatch_db',
     logging: process.env.DB_LOGGING === 'true',
   },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY || '',
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  groq: {
+    apiKey: process.env.GROQ_API_KEY || '',
+    model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
   },
 };
 
