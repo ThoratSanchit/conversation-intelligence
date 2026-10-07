@@ -11,23 +11,48 @@ export class LeadController {
 
   importCsv = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const file = await request.file();
-      if (!file) {
-        return reply.status(400).send({ success: false, message: 'CSV file is required.' });
+      let csvContent: string | Buffer | null = null;
+
+      if (request.isMultipart()) {
+        const file = await request.file();
+        if (file) {
+          csvContent = await file.toBuffer();
+        }
+      } else if (typeof request.body === 'string') {
+        csvContent = request.body;
+      } else if (typeof (request.body as any)?.csv === 'string') {
+        csvContent = (request.body as any).csv;
       }
 
-      const buffer = await file.toBuffer();
-      const normalizedLeads = await this.csvSvc.parseAndNormalize(buffer);
-      const inserted = await this.leadSvc.bulkCreateLeads(normalizedLeads);
+      if (!csvContent) {
+        return reply.status(400).send({
+          success: false,
+          message: 'CSV file or content is required.',
+        });
+      }
+
+      const { validLeads, stats } = await this.csvSvc.parseAndNormalize(csvContent);
+
+      if (validLeads.length > 0) {
+        await this.leadSvc.bulkCreateLeads(validLeads);
+      }
 
       return reply.status(201).send({
         success: true,
-        message: 'CSV imported successfully.',
-        count: inserted.length,
+        message: `CSV import complete: ${stats.imported} imported, ${stats.skipped} skipped out of ${stats.total_rows} total rows.`,
+        stats: {
+          total_rows: stats.total_rows,
+          imported: stats.imported,
+          skipped: stats.skipped,
+          errors: stats.errors,
+        },
       });
     } catch (error: any) {
       request.log.error(error);
-      return reply.status(500).send({ success: false, message: error.message || 'CSV import failed.' });
+      return reply.status(500).send({
+        success: false,
+        message: error.message || 'CSV import failed.',
+      });
     }
   };
 

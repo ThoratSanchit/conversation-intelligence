@@ -52,7 +52,7 @@ export class LeadService {
    * Bulk insert normalized leads.
    */
   async bulkCreateLeads(leadsData: LeadCreationAttributes[]) {
-    return Lead.bulkCreate(leadsData, { ignoreDuplicates: true });
+    return Lead.bulkCreate(leadsData, { returning: true });
   }
 }
 

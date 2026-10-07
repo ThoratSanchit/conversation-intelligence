@@ -29,6 +29,7 @@ export class IntelligenceController {
       // 3. Upsert into database
       const [intelligence] = await LeadIntelligence.upsert({
         lead_id: lead.id,
+        status: 'COMPLETED',
         signals,
         why_contact_now: aiOutput.why_contact_now,
         why_it_matters: aiOutput.why_it_matters,

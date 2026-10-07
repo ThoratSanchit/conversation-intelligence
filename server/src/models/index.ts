@@ -2,15 +2,19 @@ import Lead from './lead.model';
 import LeadIntelligence from './intelligence.model';
 import sequelize from '../config/database';
 
-// Define associations
+// Strict 1:1 association
 Lead.hasOne(LeadIntelligence, {
   foreignKey: 'lead_id',
   as: 'intelligence',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });
 
 LeadIntelligence.belongsTo(Lead, {
   foreignKey: 'lead_id',
   as: 'lead',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });
 
 export { Lead, LeadIntelligence, sequelize };

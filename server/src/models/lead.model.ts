@@ -2,7 +2,8 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 import { LeadAttributes } from '../types/lead.types';
 
-export interface LeadCreationAttributes extends Optional<LeadAttributes, 'id' | 'created_at' | 'updated_at'> {}
+export interface LeadCreationAttributes
+  extends Optional<LeadAttributes, 'id' | 'created_at' | 'updated_at'> {}
 
 export class Lead extends Model<LeadAttributes, LeadCreationAttributes> implements LeadAttributes {
   declare id: string;
@@ -21,6 +22,7 @@ export class Lead extends Model<LeadAttributes, LeadCreationAttributes> implemen
   declare technology: string | null;
   declare headcount_growth: string | null;
   declare open_positions: number | null;
+  declare raw_data: Record<string, unknown> | null;
   declare created_at: Date;
   declare updated_at: Date;
 }
@@ -33,23 +35,23 @@ Lead.init(
       primaryKey: true,
     },
     company_name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     website: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     industry: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: true,
     },
     location: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     revenue: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: true,
     },
     employees: {
@@ -61,23 +63,23 @@ Lead.init(
       allowNull: true,
     },
     owner_name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     owner_title: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     linkedin: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     technology: {
@@ -85,12 +87,17 @@ Lead.init(
       allowNull: true,
     },
     headcount_growth: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: true,
     },
     open_positions: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+    raw_data: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: {},
     },
   },
   {
@@ -98,6 +105,20 @@ Lead.init(
     tableName: 'leads',
     timestamps: true,
     underscored: true,
+    indexes: [
+      {
+        name: 'idx_leads_created_at',
+        fields: ['created_at'],
+      },
+      {
+        name: 'idx_leads_company_name',
+        fields: ['company_name'],
+      },
+      {
+        name: 'idx_leads_industry',
+        fields: ['industry'],
+      },
+    ],
   }
 );
 

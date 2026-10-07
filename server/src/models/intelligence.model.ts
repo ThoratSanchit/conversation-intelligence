@@ -1,6 +1,10 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
-import { DetectedSignal, LeadIntelligenceAttributes } from '../types/intelligence.types';
+import {
+  DetectedSignal,
+  IntelligenceStatus,
+  LeadIntelligenceAttributes,
+} from '../types/intelligence.types';
 
 export interface LeadIntelligenceCreationAttributes
   extends Optional<LeadIntelligenceAttributes, 'id' | 'created_at' | 'updated_at'> {}
@@ -11,11 +15,13 @@ export class LeadIntelligence
 {
   declare id: string;
   declare lead_id: string;
+  declare status: IntelligenceStatus;
   declare signals: DetectedSignal[];
   declare why_contact_now: string | null;
   declare why_it_matters: string | null;
   declare conversation_angle: string | null;
   declare suggested_opening: string | null;
+  declare error_message: string | null;
   declare created_at: Date;
   declare updated_at: Date;
 }
@@ -30,11 +36,18 @@ LeadIntelligence.init(
     lead_id: {
       type: DataTypes.UUID,
       allowNull: false,
+      unique: true,
       references: {
         model: 'leads',
         key: 'id',
       },
       onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    status: {
+      type: DataTypes.ENUM('PENDING', 'COMPLETED', 'FAILED'),
+      defaultValue: 'PENDING',
+      allowNull: false,
     },
     signals: {
       type: DataTypes.JSONB,
@@ -57,12 +70,23 @@ LeadIntelligence.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    error_message: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     sequelize,
     tableName: 'lead_intelligence',
     timestamps: true,
     underscored: true,
+    indexes: [
+      {
+        name: 'idx_lead_intelligence_lead_id_unique',
+        unique: true,
+        fields: ['lead_id'],
+      },
+    ],
   }
 );
 
