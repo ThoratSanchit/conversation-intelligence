@@ -1,0 +1,28 @@
+import Lead from './lead.model';
+import LeadIntelligence from './intelligence.model';
+import sequelize from '../config/database';
+
+// Define associations
+Lead.hasOne(LeadIntelligence, {
+  foreignKey: 'lead_id',
+  as: 'intelligence',
+});
+
+LeadIntelligence.belongsTo(Lead, {
+  foreignKey: 'lead_id',
+  as: 'lead',
+});
+
+export { Lead, LeadIntelligence, sequelize };
+
+export async function syncDatabase(options = { alter: true }): Promise<void> {
+  await sequelize.sync(options);
+  console.log('Database models synchronized successfully.');
+}
+
+export default {
+  Lead,
+  LeadIntelligence,
+  sequelize,
+  syncDatabase,
+};

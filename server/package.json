@@ -1,0 +1,38 @@
+{
+  "name": "conversation-intelligence-server",
+  "version": "1.0.0",
+  "description": "Conversation Intelligence backend on top of SaaSquatch-enriched lead data",
+  "main": "src/app.ts",
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
+  },
+  "keywords": [
+    "saasquatch",
+    "conversation-intelligence",
+    "fastify",
+    "sequelize",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^9.0.0",
+    "@fastify/multipart": "^8.3.0",
+    "dotenv": "^16.4.7",
+    "fastify": "^4.28.1",
+    "openai": "^4.52.7",
+    "papaparse": "^5.4.1",
+    "pg": "^8.16.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/papaparse": "^5.3.14",
+    "tsx": "^4.23.12",
+    "typescript": "^5.5.4"
+  }
+}
