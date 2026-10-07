@@ -13,6 +13,25 @@ const app: FastifyInstance = fastify({
 });
 
 export async function buildApp(): Promise<FastifyInstance> {
+  // Handle empty JSON bodies gracefully
+  app.addContentTypeParser(
+    'application/json',
+    { parseAs: 'string' },
+    (_req, body, done) => {
+      if (!body || (typeof body === 'string' && body.trim() === '')) {
+        done(null, {});
+        return;
+      }
+      try {
+        const json = JSON.parse(body as string);
+        done(null, json);
+      } catch (err: any) {
+        err.statusCode = 400;
+        done(err, undefined);
+      }
+    }
+  );
+
   // Register plugins
   await app.register(cors, {
     origin: true,
