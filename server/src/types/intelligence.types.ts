@@ -10,6 +10,13 @@ export interface DetectedSignal {
 
 export type IntelligenceStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
 
+export interface GeneratedIntelligenceOutput {
+  why_contact_now: string;
+  why_it_matters: string;
+  conversation_angle: string;
+  suggested_opening: string;
+}
+
 export interface LeadIntelligenceAttributes {
   id: string;
   lead_id: string;
