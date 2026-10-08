@@ -28,7 +28,7 @@ An enterprise-grade conversation and sales intelligence engine built on top of S
 - [Security](#security)
 - [Local Development](#local-development)
 - [Environment Variables](#environment-variables)
-- [Deployment Architecture](#deployment-architecture)
+- [Planned Production Deployment Architecture](#planned-production-deployment-architecture)
 - [Testing & QA](#testing--qa)
 - [Demo Dataset](#demo-dataset)
 - [Design Decisions & Trade-offs](#design-decisions--trade-offs)
@@ -90,8 +90,8 @@ Actionable Sales Intelligence (Timing, Implication, Angle, Opener)
 ## Key Features
 
 ### 1. Robust CSV Ingestion
-- Streams and parses CSV files with automatic delimiter detection and UTF-8 BOM removal.
-- Intelligent header alias resolution for over 60 common column name variants across SaaSquatch, ZoomInfo, Apollo, and custom CRMs.
+- Parses CSV files in memory using Papa Parse with automatic delimiter detection and UTF-8 BOM removal.
+- Supports common header aliases for SaaSquatch-style and related lead exports.
 - Strict data hygiene: requires `company_name`, normalizes data types, safely parses integer headcount/roles, and preserves unmapped columns in `raw_data` JSON.
 
 ### 2. Deterministic Signal Engine
@@ -127,7 +127,7 @@ flowchart TD
     F --> G["Detect HIRING_SPIKE, SURGE, CONTRACTION, etc."]
     G --> H["Store Signals with Lead Record"]
     H --> I["Sales Rep Clicks 'Generate Intelligence'"]
-    I --> J["Groq LPU Engine (Llama 3.3 70B Versatile)"]
+    I --> J["Groq LPU Engine (openai/gpt-oss-120b)"]
     J --> K["Strict System Prompt Rules Applied (No Flattery, Exact Numbers)"]
     K --> L["Persist LeadIntelligence (COMPLETED)"]
     L --> M["Interactive Sales Workspace: Timing, Angle & 1-Click Opener"]
@@ -182,10 +182,10 @@ SaaSquatch/
 | **API Framework** | Fastify v4 | High performance, low overhead, native multipart support, structured logging |
 | **Database** | PostgreSQL | Robust relational integrity, JSONB support for signals and raw unmapped CSV fields |
 | **ORM** | Sequelize v6 (TypeScript) | Declarative models, automated schema synchronization, transaction safety |
-| **AI / LLM Engine** | Groq SDK (`llama-3.3-70b-versatile`) | Ultra-low latency inference (< 1.5s per synthesis), deterministic tool formatting |
-| **CSV Parser** | Papa Parse | Robust streaming parsing, RFC 4180 compliance, flexible header transforms |
+| **AI / LLM Engine** | Groq SDK (`openai/gpt-oss-120b`) | High-speed inference via Groq, deterministic structured tool formatting |
+| **CSV Parser** | Papa Parse | RFC 4180-compliant CSV parsing, flexible header transforms |
 | **Validation** | Zod | Runtime type validation for AI structured JSON output |
-| **Frontend Framework** | React 18 & TypeScript | Component modularity, reactive state updates, strict typing |
+| **Frontend Framework** | React 19 & TypeScript | Component modularity, reactive state updates, strict typing |
 | **Build Tool** | Vite v8 | Near-instant HMR, sub-second production builds (< 900ms) |
 | **CSS Framework** | Tailwind CSS v4 | High-performance atomic styling, zero CSS runtime overhead |
 | **Icons** | Lucide React | Clean, modern SaaS iconography |
@@ -197,7 +197,7 @@ SaaSquatch/
 The frontend is intentionally designed as an intuitive sales workspace rather than a generic administrative table.
 
 ### Design Principles
-- **No Third-Party Bloat**: Built using standard React 18, Vite, and Tailwind CSS. No heavy component suites (MUI, Chakra, shadcn/ui) or global state managers (Redux, Zustand); state is managed predictably with React hooks and native browser `fetch()`.
+- **No Third-Party Bloat**: Built using standard React 19, Vite, and Tailwind CSS. No heavy component suites (MUI, Chakra, shadcn/ui) or global state managers (Redux, Zustand); state is managed predictably with React hooks and native browser `fetch()`.
 - **Primary vs. Secondary Visual Hierarchy**:
   - **Primary Attention**: Company Name, Detected Signals, Intelligence Status (`Ready` / `Pending`), and View Actions are highlighted with bold typography and high-contrast badges.
   - **Secondary Context**: Industry, Location, Employees, Headcount Growth, and Open Roles are subtly muted (`text-xs text-slate-500 font-normal`) so the sales rep's eye naturally gravitates to triggers and actions.
@@ -485,10 +485,10 @@ The ingestion pipeline handles messy real-world CSV exports seamlessly:
 
 ## Performance Considerations
 
-- **Sub-Second Frontend Builds**: Vite 8 compiles the entire React frontend in ~800ms.
-- **Ultra-Low Latency Inference**: Groq LPU engine generates structured intelligence in 1.0–1.8 seconds (compared to 6–10 seconds on traditional OpenAI/Claude endpoints).
+- **Sub-Second Frontend Builds**: Vite 8 compiles the entire React 19 frontend in ~660–890ms.
+- **Fast LPU Inference**: Groq LPU engine delivers rapid structured intelligence generation for interactive sales workflows.
 - **PostgreSQL JSONB & Indexing**: Signals and raw unmapped CSV fields utilize native PostgreSQL binary JSON (JSONB) for fast lookups.
-- **Lightweight Production Bundle**: Entire production client JS bundle is only 288 kB uncompressed (~83 kB gzip).
+- **Lightweight Production Bundle**: Entire production client JS bundle is only ~289 kB uncompressed (~84 kB gzip).
 
 ---
 
@@ -497,7 +497,7 @@ The ingestion pipeline handles messy real-world CSV exports seamlessly:
 - **Strict Environment Isolation**: API keys (`GROQ_API_KEY`) and database credentials exist exclusively in `.env` and are never exposed to the client bundle.
 - **SQL Injection Prevention**: All database interactions use Sequelize parameterized queries and object mapping.
 - **Safe HTML / Script Handling**: Outreach openers and intelligence text are rendered safely as text nodes in React, mitigating XSS risks.
-- **CORS Protection**: Fastify CORS plugin is configured to permit only trusted origin requests with credentials.
+- **CORS Configuration**: Fastify CORS plugin is configured with `origin: true` (reflecting the incoming request origin) and `credentials: true` to support local client-server development.
 
 ---
 
@@ -525,7 +525,7 @@ Edit `server/.env` with your PostgreSQL credentials and Groq API key:
 PORT=8800
 DATABASE_URL=postgres://postgres:password@localhost:5432/conversation_intelligence
 GROQ_API_KEY=gsk_your_groq_api_key_here
-GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 ### 3. Initialize Database & Start Server
@@ -554,24 +554,31 @@ The client workspace will be available at `http://localhost:5173`.
 | `PORT` | No | `8800` | Port for the Fastify backend server |
 | `DATABASE_URL` | Yes | — | PostgreSQL connection string |
 | `GROQ_API_KEY` | Yes | — | Authentication key for Groq Cloud API |
-| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | Target LLM model for intelligence generation |
+| `GROQ_MODEL` | No | `openai/gpt-oss-120b` | Target LLM model for intelligence generation |
 
 ---
 
-## Deployment Architecture
+## Planned Production Deployment Architecture
+
+The platform is architected for cloud deployment across the following planned targets:
+- **Frontend**: Static hosting planned on Vercel, Netlify, or Cloudflare Pages
+- **Backend API**: Containerized Fastify service planned on Render, Railway, Fly.io, or AWS ECS
+- **Database**: Managed PostgreSQL planned on Neon, Render, or AWS RDS
+
+*(Note: Currently operating in a verified local development environment.)*
 
 ```
 [Web Users]
      │
      ▼
-[Vite Frontend CDN / Static Host (e.g. Vercel, Netlify, Cloudflare)]
+[Planned: Vite Frontend on Vercel / Netlify / Cloudflare]
      │
      ▼ REST API (JSON)
-[Fastify Backend (e.g. Render, Railway, Fly.io, AWS ECS)]
+[Planned: Fastify Backend on Render / Railway / Fly.io]
      │
-     ├──► [Managed PostgreSQL Database]
+     ├──► [Planned: Managed PostgreSQL on Neon / RDS]
      │
-     └──► [Groq Cloud LPU API (llama-3.3-70b-versatile)]
+     └──► [Groq Cloud LPU API (openai/gpt-oss-120b)]
 ```
 
 ### Production Build Commands
@@ -583,7 +590,7 @@ The client workspace will be available at `http://localhost:5173`.
 ## Testing & QA
 
 ### End-to-End Product Verification
-The codebase passed strict end-to-end QA:
+The codebase passed strict end-to-end QA verification:
 
 ```bash
 # 1. Verify Client Build
@@ -624,9 +631,9 @@ The project includes a synthetic dataset at `server/test-synthetic-leads.csv` de
 
 ## Design Decisions & Trade-offs
 
-1. **Groq over OpenAI / Anthropic**:
-   - *Decision*: Adopted Groq's LPU inference running Llama 3.3.
-   - *Rationale*: Outbound sales reps generate intelligence interactively; Groq drops latency from ~8 seconds to ~1.2 seconds while significantly lowering operational inference costs.
+1. **Groq with `openai/gpt-oss-120b` over Legacy Endpoints**:
+   - *Decision*: Adopted Groq's high-speed LPU inference with `openai/gpt-oss-120b`.
+   - *Rationale*: Outbound sales reps generate intelligence interactively; Groq minimizes latency while significantly lowering operational inference costs.
 2. **Deterministic Rules over LLM-generated Signals**:
    - *Decision*: Hardcoded numerical threshold logic for triggers instead of prompting the LLM to identify signals.
    - *Rationale*: Prevents prompt drift and false positives, ensuring that an alert for "7 open roles" is consistently recognized as a `HIRING_SPIKE`.
@@ -641,7 +648,7 @@ The project includes a synthetic dataset at `server/test-synthetic-leads.csv` de
 
 ## Limitations
 
-- **Batch Generation**: Currently, AI sales intelligence is generated on demand per lead to conserve API tokens and prevent wasteful bulk LLM spend.
+- **On-Demand Generation**: Currently, AI sales intelligence is generated on demand per lead to conserve API tokens and prevent wasteful bulk LLM spend.
 - **Language**: Prompts and signals are currently optimized for English-language B2B lead datasets.
 - **Single Workspace**: Designed for individual sales teams without multi-tenant authentication barriers.
 
@@ -663,7 +670,7 @@ All requirements from the Architecture & Product Lead specification have been su
 - [x] Structured AI generation with Groq (`why_contact_now`, `why_it_matters`, `conversation_angle`, `suggested_opening`).
 - [x] Strict factual grounding rules prohibiting flattery and hallucinated pain points.
 - [x] Responsive React frontend with clear visual hierarchy and zero arbitrary scoring.
-- [x] Complete test coverage across ingestion, signals, AI generation, and error states.
+- [x] End-to-end QA verification across ingestion, signals, AI generation, frontend data flow, and error states.
 
 ---
 
