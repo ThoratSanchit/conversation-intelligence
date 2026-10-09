@@ -3,15 +3,6 @@
     "target": "es2022",
     "module": "commonjs",
     "lib": ["es2022"],
-    "baseUrl": "./",
-    "paths": {
-      "@config/*": ["src/config/*"],
-      "@types/*": ["src/types/*"],
-      "@models/*": ["src/models/*"],
-      "@services/*": ["src/services/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@routes/*": ["src/routes/*"]
-    },
     "rootDir": "./src",
     "outDir": "./dist",
     "sourceMap": true,
