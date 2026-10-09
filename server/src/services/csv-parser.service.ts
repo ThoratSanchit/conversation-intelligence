@@ -227,7 +227,7 @@ export class CsvParserService {
       }
     }
 
-    parsed.data.forEach((row, index) => {
+    parsed.data.forEach((row: Record<string, unknown>, index: number) => {
       const rowNumber = index + 1;
       const canonicalValues: Record<string, unknown> = {};
       const rawData: Record<string, unknown> = {};
