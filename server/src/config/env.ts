@@ -14,6 +14,9 @@ export const env = {
     password: process.env.DB_PASSWORD || 'postgres',
     name: process.env.DB_NAME || 'saasquatch_db',
     logging: process.env.DB_LOGGING === 'true',
+    ssl: process.env.DB_SSL,
+    sslRejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED,
+    sslCa: process.env.DB_SSL_CA,
   },
   groq: {
     apiKey: process.env.GROQ_API_KEY || '',
