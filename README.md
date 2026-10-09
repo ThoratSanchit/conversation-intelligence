@@ -6,8 +6,43 @@ An enterprise-grade conversation and sales intelligence engine built on top of S
 
 ---
 
+## How It Works
+
+```mermaid
+flowchart LR
+    A["Import CSV"] --> B["Explore and Filter Leads"]
+    B --> C["Open a Lead"]
+    C --> D["Generate Intelligence"]
+    D --> E["Review Insights"]
+    E --> F["Copy Opening"]
+    F --> G["Contact Manually"]
+```
+
+### 1. Import Leads
+The salesperson or CEO imports SaaSquatch-enriched company and decision-maker data using a CSV file.
+
+### 2. Explore and Filter Leads
+Browse imported leads and filter them by company, industry, location, detected signals, and intelligence status to identify relevant opportunities.
+
+### 3. Open a Lead
+Open any lead to review its company profile, decision-maker details, employee count, headcount growth, open positions, technology context, and detected signals.
+
+### 4. Generate Intelligence
+Click **Generate Intelligence** to generate:
+- **Why Contact Now?** — explains relevant, data-backed hiring or growth signals.
+- **Why It Matters** — explains why those signals may matter to the decision-maker's role.
+- **Conversation Angle** — suggests an exploratory topic or question for starting a conversation.
+
+### 5. Review and Use the Suggested Opening
+Review the personalized opening message. If it is useful, click **Copy Opener**, paste it into an email or LinkedIn message, review it, and send it manually.
+
+> **Note**: The application generates recommendations and copies messages; it does not automatically send outreach messages.
+
+---
+
 ## Table of Contents
 
+- [How It Works](#how-it-works)
 - [Overview](#overview)
 - [Problem We Solve](#problem-we-solve)
 - [Product Approach](#product-approach)
